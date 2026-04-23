@@ -7,58 +7,63 @@ export async function createpost(req,res){
 
         res.status(201).send(savedPost);
     }catch(err){
-        res.status(500).send("error creating post");
+        res.status(500).send({message : "error creating post", error : err});
     }
 }
 
-export function getAllPost(req,res,next){
-    res.send(posts);
+export async function getAllPost(req,res){
+    try{
+        const posts = await Post.find();
+        res.status(200).send(posts)
+
+    }catch(err){
+        res.status(500).send({message : "error fetching posts", error: err})
+    }
     
 }
 
-export function getSinglePost(req, res){
+export async function getSinglePost(req, res){
     let id = req.params.id;
-    let foundPost = null
-    for (let post of posts){
-        if(post.id == id){
-           foundPost = post;
-           break;
+    try{
+        const foundPost = await Post.findById(id)
+        if(foundPost){
+            return res.status(200).send(foundPost)
+        }else{
+            return res.status(404).send("post not found")
         }
+
+    }catch(err){
+        res.status(500).send({message:"error fetching post",error:err})
     }
-    if(foundPost){
-        res.send(foundPost);
+}
+
+export async function deletePostById(req, res){
+    let id = req.params.id
+
+   try{
+    let deletePost = await Post.findByIdAndDelete(id)
+    if(deletePost){
+        return res.status(200).send("Post deleted successfully")
     }else{
-        res.status(404).send("post not found")
+        return res.status(404).send("post not found");
     }
+
+   }catch(err){
+    res.status(500).send({message:"error deleting the post", error:err})
+   }
 }
 
-export function deletePostById(req, res){
-    let id = Number(req.params.id)
-
-    for(let i = 0; i < posts.length; i++){
-        if(posts[i].id === id){
-            posts.splice(i, 1);
-            return res.status(200).send("post deleted successfully")
+export async function updatePostById(req, res){
+    let id = req.params.id
+    
+    try{
+        let updatedPost = await Post.findByIdAndUpdate(id, req.body, {new:true})
+        if(updatedPost){
+            return res.status(200).send(updatedPost);
+        }else{
+            return res.status(404).send("post not found");
         }
+    }catch(err){
+        res.status(500).send({message:"error updating post",error:err})
     }
-    res.status(404).send("post not found");
-}
-
-export function updatePostById(req, res){
-    let id = Number(req.params.id)
-    let {title,content} = req.body;
-
-    for(let i = 0; i < posts.length; i++){
-        if(posts[i].id === id){
-            if(title){
-                posts[i].title = title
-            }
-            if(content){
-                posts[i].content = content
-            }
-            return res.status(200).send(posts[i])
-        }
-        
-    }
-    res.status(404).send("post not found");
 }
