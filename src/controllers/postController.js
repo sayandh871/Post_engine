@@ -1,18 +1,14 @@
+import {Post} from "../models/post.js"
 
-let posts = [];
+export async function createpost(req,res){
+    try{
+        const post = new Post(req.body);
+        const savedPost = await post.save();
 
-let count = 1;
-
-export function createpost(req, res, next){
-    let post = {
-        id : count,
-        title : req.body.title,
-        content:req.body.content
+        res.status(201).send(savedPost);
+    }catch(err){
+        res.status(500).send("error creating post");
     }
-posts.push(post)
-count++;
-res.send("post created")
-
 }
 
 export function getAllPost(req,res,next){
