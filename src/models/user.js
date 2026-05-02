@@ -21,7 +21,7 @@ const userSchema = new Schema(
       match: [/^\S+@\S+\.\S+$/, "Please use a valid email address"],
     },
     password: { type: String, required: true, minlength: 6, select: false },
-    role: { type: string, enum: ["user", "admin"], default: "user" },
+    role: { type: String, enum: ["user", "admin"], default: "user" },
   },
   { timestamps: true },
 );
