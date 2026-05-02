@@ -59,7 +59,7 @@ export const loginUser = async (req, res, next) => {
   //compare the passwords
   const isMatch = await user.comparePassword(password);
   if (!isMatch) {
-    return res.status(400).json({
+    return res.status(401).json({
       success: false,
       message: "invalid username or password",
     });
@@ -69,7 +69,7 @@ export const loginUser = async (req, res, next) => {
   const token = generateToken(user._id, user.role);
 
   //send success response
-  return res.status(20).json({
+  return res.status(200).json({
     success: true,
     message: "login successfull",
     user: {
