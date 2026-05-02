@@ -1,27 +1,26 @@
 import mongoose from "mongoose";
-import bcrypt from "bcrypt"
+import bcrypt from "bcrypt";
 
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema(
   {
     name: {
-      type: string,
+      type: String,
       required: true,
-      
       trim: true,
       minlength: 3,
       maxlength: 50,
     },
     email: {
-      type: string,
+      type: String,
       required: true,
       unique: true,
       lowercase: true,
       trim: true,
       match: [/^\S+@\S+\.\S+$/, "Please use a valid email address"],
     },
-    password: { type: string, required: true, minlength: 6 },
+    password: { type: String, required: true, minlength: 6, select: false },
     role: { type: string, enum: ["user", "admin"], default: "user" },
   },
   { timestamps: true },
@@ -37,7 +36,7 @@ userSchema.pre("save", async function (next) {
 });
 
 userSchema.methods.comparePassword = async function (enteredPassword) {
-    return await bcrypt.compare(enteredPassword, this.password)
-}
+  return await bcrypt.compare(enteredPassword, this.password);
+};
 
-export default mongoose.model("User",userSchema);
+export default mongoose.model("User", userSchema);
