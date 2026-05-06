@@ -1,7 +1,14 @@
 import { Post } from "../models/post.js";
 
-export async function createpost(req, res, next) {
-  const post = new Post(req.body);
+export async function createpost(req, res) {
+  const post = new Post({
+    title : req.body.title,
+    content : req.body.content,
+    category : req.body.category,
+    tags : req.body.tags,
+    author : req.user._id
+
+  });
   const savedPost = await post.save();
 
   res.status(201).send(savedPost);
