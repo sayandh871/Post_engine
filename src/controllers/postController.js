@@ -32,27 +32,24 @@ export async function getSinglePost(req, res, next) {
   res.status(200).send(foundPost);
 }
 
-export async function deletePostById(req, res, next) {
-  let id = req.params.id;
-  let deletePost = await Post.findByIdAndDelete(id);
+export async function deletePost(req, res, next) {
+  const post = req.post;
 
-  if (!deletePost) {
-    const err = new Error("post not found");
-    err.status = 404;
-    return next(err);
-  }
+  await post.deleteOne();
 
   res.status(200).send("Post deleted successfully");
 }
 
-export async function updatePostById(req, res, next) {
-  let id = req.params.id;
-  let updatedPost = await Post.findByIdAndUpdate(id, req.body, { new: true });
-  if (!updatedPost) {
-    const err = new Error("post not found");
-    err.status = 404;
-    return next(err);
-  }
+export async function updatePost(req, res, next) {
 
-  return res.status(200).send(updatedPost);
+  let post = req.post;
+
+  if(req.body.title) post.title = req.body.title
+  if(req.body.content) post.content = req.body.content
+  if(req.body.category) post.category = req.body.category
+  if(req.body.tags) post.tags = req.body.tags
+
+  await post.save();
+
+  return res.status(200).send(post);
 }
